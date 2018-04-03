@@ -37,4 +37,4 @@ RUN mkdir -p /tmp/cache && mkdir -p /tmp/data && mkdir -p /tmp/config
 ENV EXPORT_NAME HTML5
 ENV OUTPUT_FILENAME index.html
 
-CMD ["sh", "-c", "/build/godot --export '${EXPORT_NAME}' --path /build/src '/build/output/${OUTPUT_FILENAME}'"]
+CMD ["sh", "-c", '/build/godot --export "${EXPORT_NAME}" --path /build/src "/build/output/${OUTPUT_FILENAME}"']
