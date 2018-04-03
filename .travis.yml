@@ -1,0 +1,65 @@
+services:
+- docker
+
+env:
+  # Use this to set your game's name. It is being used
+  # throughout this file for naming exported artifacts.
+  # This will, for example, create an "Awesome Game.exe"
+  - GAME_NAME="Awesome Game"
+
+install:
+- docker pull gamedrivendesign/godot-export
+
+# Each of the following lines exports the game for a given platform.
+# You can specify the platform in the EXPORT_NAME variable
+# The exported game will be written to the folder specified after the second "-v" flag
+# "-v $(pwd)/output/html5:/build/output" writes the exported game to  the "output/html5" folder.
+script:
+- docker run -e EXPORT_NAME="HTML5"           -e OUTPUT_FILENAME="index.html"           -v $(pwd):/build/src -v $(pwd)/output/html5:/build/output   gamedrivendesign/godot-export
+- docker run -e EXPORT_NAME="Linux/X11"       -e OUTPUT_FILENAME="${GAME_NAME}"         -v $(pwd):/build/src -v $(pwd)/output/linux:/build/output   gamedrivendesign/godot-export
+- docker run -e EXPORT_NAME="Windows Desktop" -e OUTPUT_FILENAME="${GAME_NAME}.exe"     -v $(pwd):/build/src -v $(pwd)/output/windows:/build/output gamedrivendesign/godot-export
+- docker run -e EXPORT_NAME="Mac OSX"         -e OUTPUT_FILENAME="${GAME_NAME}-mac.zip" -v $(pwd):/build/src -v $(pwd)/output/mac:/build/output     gamedrivendesign/godot-export
+
+# Now comes deployment related code.
+# To make this work, you need to set a GITHUB_TOKEN environment variable through
+# the TravisCI web ui. For more information take a look at the TravisCI docs:
+# https://docs.travis-ci.com/user/deployment/pages/#Setting-the-GitHub-token
+
+# This creates zip files from the exported game builds for the
+# three desktop platforms
+before_deploy:
+- zip -j "${GAME_NAME}-linux.zip"   output/linux/*
+- zip -j "${GAME_NAME}-windows.zip" output/windows/*
+# No need to zip the mac game, because it already is a zip
+- cp -R output/mac/* .
+
+deploy:
+# The following block is responsible to upload the zip files
+# created above to GitHub Releases whenever a new git tag
+# is created.
+- provider: releases
+  skip-cleanup: true
+  api_key: $GITHUB_TOKEN
+  file:
+    - "${GAME_NAME}-linux.zip"
+    - "${GAME_NAME}-windows.zip"
+    - "${GAME_NAME}-mac.zip"
+  on:
+    # Create GitHub Releases for new git tags
+    # regardless of the branch.
+    all_branches: true
+    tags: true
+
+# The following block is responsible for pushing the HTML5 version of the game
+# to GitHub Pages. To do so, Travis will commit the contents specified in "local-dir"
+# to a "gh-pages" branch in your repository. It will then be accessible at:
+# username.github.io/reponame if your repo is at github.com/username/reponame.
+- provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: output/html5
+  on:
+    # This will only update the game with new commits from the master branch
+    # You can optionally only update the game on new git tags.
+    branch: master
+    # tags: true

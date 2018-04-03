@@ -1,0 +1,107 @@
+version: '{build}'
+
+clone_folder: c:\game
+
+platform: x64
+image: Visual Studio 2017
+
+environment:
+  # Use this to set your game's name. It is being used
+  # throughout this file for naming exported artifacts.
+  # This will, for example, create an "HareDerLage.exe"
+  GAME_NAME: Awesome Game
+
+# The following two lines can be enabled to allow a RDP connection to the machine
+# Connection details will be displayed in the build log.
+# If you want to keep the RDP connection open even after the last command
+# has run, enable the on_finish block as well.
+#
+# https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+
+#init:
+#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+cache:
+  - c:\game-tmp -> appveyor.yml
+
+before_build:
+  - ps: $ErrorActionPreference = "Stop"
+  - ps: |-
+        mkdir -Force c:\game\ci\build
+        mkdir -Force c:\game-build\windows
+        mkdir -Force c:\game-build\linux
+        mkdir -Force c:\game-build\mac
+        mkdir -Force c:\game-build\html
+        mkdir -Force c:\game-tmp
+        cd c:\game-tmp
+
+  # Install Mesa/OpenGL
+  - ps: |-
+        if (!(Test-Path 'opengl32.dll')) {
+          Start-FileDownload 'https://sourceforge.net/projects/msys2/files/REPOS/MINGW/x86_64/mingw-w64-x86_64-mesa-17.3.3-1-any.pkg.tar.xz/download' -fileName mesa.tar.xz
+          7z x mesa.tar.xz
+          7z e mesa.tar mingw64\bin\opengl32.dll
+          rm mesa.tar.xz
+          rm mesa.tar
+        }
+
+  # Install Godot
+  - ps: |-
+        if (!(Test-Path 'godot.exe')) {
+          Start-FileDownload 'https://downloads.tuxfamily.org/godotengine/3.0.2/Godot_v3.0.2-stable_win64.exe.zip'
+          7z x -tzip Godot_v3.0.2-stable_win64.exe.zip
+          rm Godot_v3.0.2-stable_win64.exe.zip
+          mv Godot_v3.0.2-stable_win64.exe godot.exe
+        }
+
+  # Install Godot export templates
+  - ps: |-
+        if (!(Test-Path 'templates')) {
+          Start-FileDownload 'https://downloads.tuxfamily.org/godotengine/3.0.2/Godot_v3.0.2-stable_export_templates.tpz' -fileName export_templates.tpz
+          7z x -tzip export_templates.tpz
+          rm export_templates.tpz
+        }
+        mkdir -Force C:\Users\appveyor\AppData\Roaming\Godot\templates
+        cp -r templates C:\Users\appveyor\AppData\Roaming\Godot\templates\3.0.2.stable
+
+  # Install virtual audio device, otherwise Godot isn't able to export the game.
+  - ps: |-
+        if (!(Test-Path 'vsc.exe')) {
+          Start-FileDownload 'https://www.e2esoft.com/download/vsc' -fileName vsc.exe
+        }
+        .\vsc.exe /silent | Out-Null
+
+# Export game for the different platforms
+# Then move generated artifacts into project directory, which is required by AppVeyor
+# to be able to mark them as artifacts.
+build_script:
+  - ps: |-
+        c:\game-tmp\godot.exe -v --no-window --path c:\game --export "Windows Desktop" "c:\game-build\windows\$env:GAME_NAME.exe"
+        c:\game-tmp\godot.exe -v --no-window --path c:\game --export "Linux/X11"       "c:\game-build\linux\$env:GAME_NAME"
+        c:\game-tmp\godot.exe -v --no-window --path c:\game --export "Mac OSX"         "c:\game-build\mac\$env:GAME_NAME-mac.zip"
+        c:\game-tmp\godot.exe -v --no-window --path c:\game --export "HTML5"           "c:\game-build\html\index.html"
+        cp -r c:\game-build\* c:\game\ci\build
+
+artifacts:
+  - path: ci\build\windows
+    name: $(GAME_NAME)-windows
+  - path: ci\build\linux
+    name: $(GAME_NAME)-linux
+  - path: ci\build\mac\$(GAME_NAME)-mac.zip
+    name: $(GAME_NAME)-mac
+  - path: ci\build\html
+    name: $(GAME_NAME)-html
+
+# Deploy artifacts to GitHub releases for new tags
+deploy:
+  - provider: GitHub
+    artifact: /windows|linux|mac|html/
+    draft: false
+    prerelease: false
+    auth_token:
+      secure: yv0xyLQLnTDw5JBX0r5NdaBrHb4g9DyEmgIFhLysInvlZI1ZNUc6Qc+N9OdvieBP
+    on:
+      appveyor_repo_tag: true # deploy on tag push only
