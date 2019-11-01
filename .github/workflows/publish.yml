@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godot_version: [3.0, 3.0.1]
+        godot_version: ["3.0", "3.0.1"]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -19,7 +19,7 @@ jobs:
       env:
         GODOT_VERSION: ${{ matrix.godot_version }}
       with:
-        name: gamedrivendesign/godot-export
+        name: "gamedrivendesign/godot-export:${{ matrix.godot_version }}"
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         buildargs: GODOT_VERSION
