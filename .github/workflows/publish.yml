@@ -1,13 +1,25 @@
 name: Publish to Docker
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - gh-actions # TODO: remove
+
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        godot_version: [3.0, 3.0.1]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Publish to Registry
+    - name: Build for Godot ${{ matrix.godot_version }}
       uses: elgohr/Publish-Docker-Github-Action@master
+      env:
+        GODOT_VERSION: ${{ matrix.godot_version }}
       with:
         name: gamedrivendesign/godot-export
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        buildargs: GODOT_VERSION
