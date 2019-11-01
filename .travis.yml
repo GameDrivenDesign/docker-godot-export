@@ -11,7 +11,7 @@ env:
   - GAME_NAME="Awesome Game" GODOT_VERSION="3.0.2"
 
 install:
-- docker pull gamedrivendesign/godot-export
+- docker pull "gamedrivendesign/godot-export:${GODOT_VERSION}"
 
 # Each of the following lines exports the game for a given platform.
 # You can specify the platform in the EXPORT_NAME variable
