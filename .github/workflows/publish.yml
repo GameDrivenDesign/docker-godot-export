@@ -10,6 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Note: The latest version must be at the very end (it will additionally be pushed as "latest")
         godot_version: ["3.0.1", "3.0.2", "3.0.3", "3.0.4", "3.0.5", "3.0.6", "3.1", "3.1.1"]
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +21,16 @@ jobs:
         GODOT_VERSION: ${{ matrix.godot_version }}
       with:
         name: "gamedrivendesign/godot-export:${{ matrix.godot_version }}"
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        buildargs: GODOT_VERSION
+    - name: Push Godot ${{ matrix.godot_version }} as "latest"
+      if: strategy.job-index == strategy.job-total - 1
+      uses: elgohr/Publish-Docker-Github-Action@master
+      env:
+        GODOT_VERSION: ${{ matrix.godot_version }}
+      with:
+        name: "gamedrivendesign/godot-export:latest"
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         buildargs: GODOT_VERSION
