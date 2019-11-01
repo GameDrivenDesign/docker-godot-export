@@ -8,7 +8,9 @@ You can also use the provided Docker image by itself.
 
 ## Dockerfile
 
-Use this Dockerfile to automatically export your game.
+Use this Dockerfile to automatically export your game. Make sure that you have
+created an `export_presets.cfg` file with all necessary export templates as
+described [in the Godot documentation](https://docs.godotengine.org/en/3.1/getting_started/workflow/export/exporting_projects.html).
 
 Set `EXPORT_NAME` to your template's name and `OUTPUT_FILENAME` accordingly.
 Add two volumes, one from your repository to `/build/src` and another to

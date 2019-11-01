@@ -14,6 +14,10 @@ install:
 # You can specify the platform in the EXPORT_NAME variable
 # The exported game will be written to the folder specified after the second "-v" flag
 # "-v $(pwd)/output/html5:/build/output" writes the exported game to  the "output/html5" folder.
+#
+# Make sure that you have created an `export_presets.cfg` file with all necessary export
+# templates (HTML5, Linux/X11, Windows Desktop, Max OSX) as described in the Godot documentation:
+# https://docs.godotengine.org/en/3.1/getting_started/workflow/export/exporting_projects.html
 script:
 - docker run -e EXPORT_NAME="HTML5"           -e OUTPUT_FILENAME="index.html"           -v $(pwd):/build/src -v $(pwd)/output/html5:/build/output   gamedrivendesign/godot-export
 - docker run -e EXPORT_NAME="Linux/X11"       -e OUTPUT_FILENAME="${GAME_NAME}"         -v $(pwd):/build/src -v $(pwd)/output/linux:/build/output   gamedrivendesign/godot-export
