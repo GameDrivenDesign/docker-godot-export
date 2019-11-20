@@ -12,6 +12,8 @@
 
 FROM alpine:edge
 
+ARG GODOT_VERSION
+
 WORKDIR /build
 
 RUN apk --no-cache add ca-certificates wget
@@ -20,14 +22,14 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 	&& wget -q https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
 	&& apk add glibc-2.29-r0.apk
 
-RUN wget -q --waitretry=1 --retry-connrefused -T 10 https://downloads.tuxfamily.org/godotengine/3.1.1/Godot_v3.1.1-stable_linux_server.64.zip -O /tmp/godot.zip \
+RUN wget -q --waitretry=1 --retry-connrefused -T 10 https://downloads.tuxfamily.org/godotengine/$GODOT_VERSION/Godot_v$GODOT_VERSION-stable_linux_server.64.zip -O /tmp/godot.zip \
 	&& unzip -q -d /tmp /tmp/godot.zip \
 	&& mv /tmp/Godot* /build/godot
 
-RUN wget -q --waitretry=1 --retry-connrefused -T 10 https://downloads.tuxfamily.org/godotengine/3.1.1/Godot_v3.1.1-stable_export_templates.tpz -O /tmp/export-templates.tpz \
+RUN wget -q --waitretry=1 --retry-connrefused -T 10 https://downloads.tuxfamily.org/godotengine/$GODOT_VERSION/Godot_v$GODOT_VERSION-stable_export_templates.tpz -O /tmp/export-templates.tpz \
 	&& mkdir -p /tmp/data/godot/templates \
 	&& unzip -q -d /tmp/data/godot/templates /tmp/export-templates.tpz \
-	&& mv /tmp/data/godot/templates/templates /tmp/data/godot/templates/3.1.1.stable
+	&& mv /tmp/data/godot/templates/templates /tmp/data/godot/templates/$GODOT_VERSION.stable
 
 ENV XDG_CACHE_HOME /tmp/cache
 ENV XDG_DATA_HOME /tmp/data

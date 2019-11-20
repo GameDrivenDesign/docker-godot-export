@@ -2,13 +2,16 @@ services:
 - docker
 
 env:
-  # Use this to set your game's name. It is being used
+  # Use GAME_NAME to set your game's name. It is being used
   # throughout this file for naming exported artifacts.
   # This will, for example, create an "Awesome Game.exe"
-  - GAME_NAME="Awesome Game"
+  # Also set the Godot version you want to use here. Supported Godot versions can be
+  # found here: https://cloud.docker.com/u/gamedrivendesign/repository/docker/gamedrivendesign/godot-export/tags
+  # If your version is not available, please open an issue here: https://github.com/GameDrivenDesign/docker-godot-export
+  - GAME_NAME="Awesome Game" GODOT_VERSION="3.0.2"
 
 install:
-- docker pull gamedrivendesign/godot-export
+- docker pull "gamedrivendesign/godot-export:${GODOT_VERSION}"
 
 # Each of the following lines exports the game for a given platform.
 # You can specify the platform in the EXPORT_NAME variable
@@ -19,10 +22,10 @@ install:
 # templates (HTML5, Linux/X11, Windows Desktop, Max OSX) as described in the Godot documentation:
 # https://docs.godotengine.org/en/3.1/getting_started/workflow/export/exporting_projects.html
 script:
-- docker run -e EXPORT_NAME="HTML5"           -e OUTPUT_FILENAME="index.html"           -v $(pwd):/build/src -v $(pwd)/output/html5:/build/output   gamedrivendesign/godot-export
-- docker run -e EXPORT_NAME="Linux/X11"       -e OUTPUT_FILENAME="${GAME_NAME}"         -v $(pwd):/build/src -v $(pwd)/output/linux:/build/output   gamedrivendesign/godot-export
-- docker run -e EXPORT_NAME="Windows Desktop" -e OUTPUT_FILENAME="${GAME_NAME}.exe"     -v $(pwd):/build/src -v $(pwd)/output/windows:/build/output gamedrivendesign/godot-export
-- docker run -e EXPORT_NAME="Mac OSX"         -e OUTPUT_FILENAME="${GAME_NAME}-mac.zip" -v $(pwd):/build/src -v $(pwd)/output/mac:/build/output     gamedrivendesign/godot-export
+- docker run -e EXPORT_NAME="HTML5"           -e OUTPUT_FILENAME="index.html"           -v $(pwd):/build/src -v $(pwd)/output/html5:/build/output   "gamedrivendesign/godot-export:${GODOT_VERSION}"
+- docker run -e EXPORT_NAME="Linux/X11"       -e OUTPUT_FILENAME="${GAME_NAME}"         -v $(pwd):/build/src -v $(pwd)/output/linux:/build/output   "gamedrivendesign/godot-export:${GODOT_VERSION}"
+- docker run -e EXPORT_NAME="Windows Desktop" -e OUTPUT_FILENAME="${GAME_NAME}.exe"     -v $(pwd):/build/src -v $(pwd)/output/windows:/build/output "gamedrivendesign/godot-export:${GODOT_VERSION}"
+- docker run -e EXPORT_NAME="Mac OSX"         -e OUTPUT_FILENAME="${GAME_NAME}-mac.zip" -v $(pwd):/build/src -v $(pwd)/output/mac:/build/output     "gamedrivendesign/godot-export:${GODOT_VERSION}"
 
 # Now comes deployment related code.
 # To make this work, you need to set a GITHUB_TOKEN environment variable through

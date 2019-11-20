@@ -8,8 +8,11 @@ You can also use the provided Docker image by itself.
 
 ## Dockerfile
 
-Use this Dockerfile to automatically export your game. Make sure that you have
-created an `export_presets.cfg` file with all necessary export templates as
+Use this Dockerfile to automatically export your game. Choose the Godot version you
+want to use as the Docker image tag (e.g., 3.0.2 as shown below). Supported Godot
+versions can be found [here](https://cloud.docker.com/u/gamedrivendesign/repository/docker/gamedrivendesign/godot-export/tags).
+If your version is not available, please open an issue [in this repository](https://github.com/GameDrivenDesign/docker-godot-export).
+Make sure that you have created an `export_presets.cfg` file with all necessary export templates as
 described [in the Godot documentation](https://docs.godotengine.org/en/3.1/getting_started/workflow/export/exporting_projects.html).
 
 Set `EXPORT_NAME` to your template's name and `OUTPUT_FILENAME` accordingly.
@@ -22,7 +25,7 @@ E.g. inside your game's main folder (find the product in `/tmp/output`):
 docker run \
 	-e EXPORT_NAME="HTML5" \
 	-e OUTPUT_FILENAME="index.html" \
-	-v $(pwd):/build/src -v /tmp/output:/build/output gamedrivendesign/godot-export
+	-v $(pwd):/build/src -v /tmp/output:/build/output gamedrivendesign/godot-export:3.0.2
 ```
 
 ## Travis Integration

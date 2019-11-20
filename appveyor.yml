@@ -10,6 +10,10 @@ environment:
   # throughout this file for naming exported artifacts.
   # This will, for example, create an "HareDerLage.exe"
   GAME_NAME: Awesome Game
+  # Set the Godot version you want to use here. Supported Godot versions can be
+  # found here: https://cloud.docker.com/u/gamedrivendesign/repository/docker/gamedrivendesign/godot-export/tags
+  # If your version is not available, please open an issue here: https://github.com/GameDrivenDesign/docker-godot-export
+  GODOT_VERSION: "3.0.2"
 
 # The following two lines can be enabled to allow a RDP connection to the machine
 # Connection details will be displayed in the build log.
@@ -51,21 +55,21 @@ before_build:
   # Install Godot
   - ps: |-
         if (!(Test-Path 'godot.exe')) {
-          Start-FileDownload 'https://downloads.tuxfamily.org/godotengine/3.0.2/Godot_v3.0.2-stable_win64.exe.zip'
-          7z x -tzip Godot_v3.0.2-stable_win64.exe.zip
-          rm Godot_v3.0.2-stable_win64.exe.zip
-          mv Godot_v3.0.2-stable_win64.exe godot.exe
+          Start-FileDownload "https://downloads.tuxfamily.org/godotengine/$env:GODOT_VERSION/Godot_v$env:GODOT_VERSION-stable_win64.exe.zip"
+          7z x -tzip "Godot_v$env:GODOT_VERSION-stable_win64.exe.zip"
+          rm "Godot_v$env:GODOT_VERSION-stable_win64.exe.zip"
+          mv "Godot_v$env:GODOT_VERSION-stable_win64.exe godot.exe"
         }
 
   # Install Godot export templates
   - ps: |-
         if (!(Test-Path 'templates')) {
-          Start-FileDownload 'https://downloads.tuxfamily.org/godotengine/3.0.2/Godot_v3.0.2-stable_export_templates.tpz' -fileName export_templates.tpz
+          Start-FileDownload "https://downloads.tuxfamily.org/godotengine/$env:GODOT_VERSION/Godot_v$env:GODOT_VERSION-stable_export_templates.tpz" -fileName export_templates.tpz
           7z x -tzip export_templates.tpz
           rm export_templates.tpz
         }
         mkdir -Force C:\Users\appveyor\AppData\Roaming\Godot\templates
-        cp -r templates C:\Users\appveyor\AppData\Roaming\Godot\templates\3.0.2.stable
+        cp -r templates "C:\Users\appveyor\AppData\Roaming\Godot\templates\$env:GODOT_VERSION.stable"
 
   # Install virtual audio device, otherwise Godot isn't able to export the game.
   - ps: |-
