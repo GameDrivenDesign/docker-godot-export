@@ -10,7 +10,6 @@ inputs:
   godot-version:
     description: 'Version of godot required to build the project'
     default: 'latest'
-outputs:
 runs:
   using: 'docker'
   image: 'docker://gamedrivendesign/godot-export:${{ inputs.godot-version }}' # use already built docker images
