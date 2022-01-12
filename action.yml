@@ -15,5 +15,5 @@ runs:
   steps:
     - run: mkdir output
       shell: bash
-    - run: docker run -v $(pwd):/mnt "gamedrivendesign/godot-export:${{ inputs.godot-version }}" /build/godot --export-debug "${{ inputs.export-template }}" "/mnt/output/${{ inputs.output-filename }}"
+    - run: docker run -v $(pwd):/mnt "gamedrivendesign/godot-export:${{ inputs.godot-version }}" /build/godot --path /mnt --export-debug "${{ inputs.export-template }}" "/mnt/output/${{ inputs.output-filename }}"
       shell: bash
