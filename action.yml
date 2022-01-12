@@ -13,7 +13,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: mkdir /github/workspace/output
+    - run: mkdir output
       shell: bash
-    - run: docker run "docker://gamedrivendesign/godot-export:${{ inputs.godot-version }}" /build/godot --export '${{ inputs.export-template }}' --path /github/workspace '/github/workspace/output/${{ inputs.output-filename }}'
+    - run: docker run -v $(pwd):/mnt "gamedrivendesign/godot-export:${{ inputs.godot-version }}" /build/godot --export "${{ inputs.export-template }}" --path /mnt "/mnt/output/${{ inputs.output-filename }}"
       shell: bash
