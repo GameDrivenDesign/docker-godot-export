@@ -14,4 +14,6 @@ runs:
   using: 'composite'
   steps:
     - run: mkdir /github/workspace/output
+      shell: bash
     - run: docker run "docker://gamedrivendesign/godot-export:${{ inputs.godot-version }}" /build/godot --export '${{ inputs.export-template }}' --path /github/workspace '/github/workspace/output/${{ inputs.output-filename }}'
+      shell: bash
