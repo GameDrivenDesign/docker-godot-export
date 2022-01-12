@@ -15,6 +15,8 @@ runs:
   image: 'docker://gamedrivendesign/godot-export:latest' # use already built docker images
   entrypoint: /build/godot 
   args:
-    - --export '${{ inputs.export-template }}'
-    - --path /github/workspace
+    - --export
+    - '${{ inputs.export-template }}'
+    - --path
+    - /github/workspace
     - '/github/workspace/output/${{ inputs.output-filename }}'
