@@ -10,10 +10,10 @@ You can also use the provided Docker image by itself.
 
 Use this Dockerfile to automatically export your game. Choose the Godot version you
 want to use as the Docker image tag (e.g., 3.0.2 as shown below). Supported Godot
-versions can be found [here](https://cloud.docker.com/u/gamedrivendesign/repository/docker/gamedrivendesign/godot-export/tags).
+versions can be found [here](https://hub.docker.com/r/gamedrivendesign/godot-export/tags).
 If your version is not available, please open an issue [in this repository](https://github.com/GameDrivenDesign/docker-godot-export).
 Make sure that you have created an `export_presets.cfg` file with all necessary export templates as
-described [in the Godot documentation](https://docs.godotengine.org/en/3.1/getting_started/workflow/export/exporting_projects.html).
+described [in the Godot documentation](https://docs.godotengine.org/en/3.4/tutorials/export/exporting_projects.html).
 
 Set `EXPORT_NAME` to your template's name and `OUTPUT_FILENAME` accordingly.
 Add two volumes, one from your repository to `/build/src` and another to
