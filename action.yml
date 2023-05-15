@@ -1,0 +1,21 @@
+name: 'Godot Export'
+description: 'Generate a godot binary from the repository'
+inputs:
+  export-template:  # id of input
+    description: 'Template name to use for exporting the project'
+    required: true
+  output-filename:
+    description: 'Name of the generated executable'
+    required: true
+  godot-version:
+    description: 'Version of godot required to build the project'
+    default: 'latest'
+outputs:
+runs:
+  using: 'docker'
+  image: 'docker://gamedrivendesign/godot-export:${{ inputs.godot-version }}' # use already built docker images
+  entrypoint: /build/godot 
+  args:
+    - --export '${{ inputs.export-template }}'
+    - --path /github/workspace
+    - '/github/workspace/output/${{ inputs.output-filename }}'
